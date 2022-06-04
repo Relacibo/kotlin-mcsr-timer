@@ -24,15 +24,24 @@ private object Constants {
 @Serializable
 data class AppPreferences constructor(
     var colorTheme: ColorTheme = ColorTheme.SYSTEM,
-    var timerStartTrigger: TimerStartTrigger = TimerStartTrigger.AUTOMATIC,
+    var timerStartTrigger: TimerStartTrigger = TimerStartTrigger.WORLD_START,
+    var timerStartShortcut: String? = null,
+    var timerEndTrigger: TimerEndTrigger = TimerEndTrigger.END_SCREEN,
+    var timerEndShortcut: String? = null,
     var widthInt: Int = 500,
     var heightInt: Int = 300,
 )
 
 @Serializable
 enum class TimerStartTrigger {
-    AUTOMATIC,
-    FIRST_INPUT
+    WORLD_START,
+    FIRST_INPUT,
+    NONE,
+}
+
+@Serializable
+enum class TimerEndTrigger {
+    END_SCREEN
 }
 
 @Serializable

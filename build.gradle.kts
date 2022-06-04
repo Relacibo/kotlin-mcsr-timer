@@ -28,6 +28,7 @@ kotlin {
             dependencies {
                 implementation(compose.desktop.currentOs)
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${extra["serialization-json.version"]}")
+                implementation("com.github.kwhat:jnativehook:${extra["jnativehook.version"]}")
             }
         }
         val jvmTest by getting

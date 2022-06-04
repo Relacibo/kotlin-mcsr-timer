@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import com.github.kwhat.jnativehook.GlobalScreen
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -44,6 +45,11 @@ fun App(
             height = preferences.heightInt
         }
     }
+    DisposableEffect(Unit) {
+        val keyBinder = KeyBinder();
+        GlobalScreen.addNativeKeyListener(keyBinder);
+        onDispose { GlobalScreen.removeNativeKeyListener(keyBinder) }
+    }
     CustomTheme(darkmode = darkmode) {
         Box(
             Modifier.fillMaxSize().hoverable(interactionSource).background(MaterialTheme.colors.background)
@@ -58,7 +64,13 @@ fun App(
                     SettingsForm(preferencesState)
                 }
                 if (hovered || showSettingsForm) {
-                    ButtonOverlay(exit, showSettingsFormState)
+                    ButtonOverlay(
+                        exit, showSettingsFormState, if (showSettingsForm) {
+                            ButtonOverlayState.SETTINGS
+                        } else {
+                            ButtonOverlayState.TIMER
+                        }
+                    )
                 }
             }
         }

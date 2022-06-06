@@ -57,7 +57,8 @@ fun TheTimer(
     }
     LaunchedEffect(lastTimestamp) {
         while (lastTimestamp != null) {
-            val realtime = Duration.between(lastTimestamp, Instant.now()) + add
+            val now = Instant.now()
+            val realtime = Duration.between(lastTimestamp, now) + add
             formatted = format(realtime)
             delay((1000 / updatesPerSecond).toLong())
         }

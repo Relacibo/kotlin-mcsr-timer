@@ -29,7 +29,8 @@ data class AppPreferences constructor(
     var timerEndTrigger: TimerEndTrigger = TimerEndTrigger.END_SCREEN,
     var timerEndShortcut: KeyCombination? = null,
     var timerResetShortcut: KeyCombination? = null,
-    var windowSize: WindowSize = WindowSize.MD
+    var windowSize: WindowSize = WindowSize.MD,
+    var updatesPerSecond: UpdatesPerSecond = UpdatesPerSecond.N30
 )
 
 @Serializable
@@ -59,6 +60,14 @@ enum class WindowSize {
     MD,
     LG,
     XL
+}
+
+@Serializable
+enum class UpdatesPerSecond {
+    N15,
+    N30,
+    N60,
+    N144,
 }
 
 fun incrementWindowSize(ws: WindowSize): WindowSize {

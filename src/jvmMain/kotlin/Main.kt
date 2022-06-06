@@ -60,7 +60,13 @@ fun App(
                 if (showSettingsForm) {
                     SettingsForm(preferencesState)
                 }
-                TheTimer(preferencesState, 30, widthState, !showSettingsForm)
+                val updatesPerSecond = when (preferences.updatesPerSecond) {
+                    UpdatesPerSecond.N15 -> 15
+                    UpdatesPerSecond.N30 -> 30
+                    UpdatesPerSecond.N60 -> 60
+                    UpdatesPerSecond.N144 -> 144
+                }
+                TheTimer(preferencesState, updatesPerSecond, widthState, !showSettingsForm)
                 val boState = if (showSettingsForm) {
                     ButtonOverlayState.SETTINGS
                 } else {
@@ -86,20 +92,22 @@ fun CustomTheme(darkmode: Boolean, content: @Composable () -> Unit) {
 }
 
 
-fun main() = application {
-    val sizeState = remember { mutableStateOf<Size>(Size(0F, 0F)) }
-    val size by sizeState
-    Window(
-        onCloseRequest = ::exitApplication,
-        undecorated = true,
-        alwaysOnTop = true,
-        resizable = false
-    ) {
-        LaunchedEffect(size) {
-            window.size = Dimension(size.width.toInt(), size.height.toInt())
-        }
-        WindowDraggableArea {
-            App(::exitApplication, sizeState)
+fun main() {
+    application {
+        val sizeState = remember { mutableStateOf<Size>(Size(0F, 0F)) }
+        val size by sizeState
+        Window(
+            onCloseRequest = ::exitApplication,
+            undecorated = true,
+            alwaysOnTop = true,
+            resizable = false
+        ) {
+            LaunchedEffect(size) {
+                window.size = Dimension(size.width.toInt(), size.height.toInt())
+            }
+            WindowDraggableArea {
+                App(::exitApplication, sizeState)
+            }
         }
     }
 }

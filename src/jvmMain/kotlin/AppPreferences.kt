@@ -25,9 +25,10 @@ private object Constants {
 data class AppPreferences constructor(
     var colorTheme: ColorTheme = ColorTheme.SYSTEM,
     var timerStartTrigger: TimerStartTrigger = TimerStartTrigger.WORLD_START,
-    var timerStartShortcut: String? = null,
+    var timerStartShortcut: KeyCombination? = null,
     var timerEndTrigger: TimerEndTrigger = TimerEndTrigger.END_SCREEN,
-    var timerEndShortcut: String? = null,
+    var timerEndShortcut: KeyCombination? = null,
+    var timerResetShortcut: KeyCombination? = null,
     var widthInt: Int = 500,
     var heightInt: Int = 300,
 )
@@ -36,6 +37,7 @@ data class AppPreferences constructor(
 enum class TimerStartTrigger {
     WORLD_START,
     FIRST_INPUT,
+    TIME_SET_ZERO,
     NONE,
 }
 

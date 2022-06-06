@@ -13,7 +13,7 @@ fun SettingsForm(preferencesState: MutableState<AppPreferences>) {
     var preferences by preferencesState
     var textfieldSize by remember { mutableStateOf(IntSize.Zero) }
     var startKeybind by remember { mutableStateOf<String?>(null) }
-    Box(Modifier.width(300.dp).padding(vertical = 15.dp, horizontal = 20.dp)) {
+    Box(Modifier.width(400.dp).padding(vertical = 15.dp, horizontal = 20.dp)) {
         Column(modifier = Modifier.fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(15.dp)) {
             Row {
                 Select(
@@ -23,24 +23,17 @@ fun SettingsForm(preferencesState: MutableState<AppPreferences>) {
                     values = listOf(
                         Pair("World Start", TimerStartTrigger.WORLD_START),
                         Pair("First Input", TimerStartTrigger.FIRST_INPUT),
+                        Pair("Time Set 0", TimerStartTrigger.TIME_SET_ZERO),
                         Pair(
                             "None", TimerStartTrigger.NONE
                         )
                     ),
                 )
             }
-            Box {
-                OutlinedTextField(
-                    value = if (startKeybind != null) startKeybind!! else "Unassigned",
-                    onValueChange = {},
-                    modifier = Modifier.fillMaxWidth().onGloballyPositioned { coordinates ->
-                        textfieldSize = coordinates.size
-                    },
-                    label = { Text("Start Keybind") }
-                )
-                Box(
-                    Modifier.size(width = textfieldSize.width.dp, height = textfieldSize.height.dp))
-            }
+            KeyCombinationPicker(
+                label = "Start Keybind",
+                state = preferences.timerStartShortcut,
+                setState = { preferences = preferences.copy(timerStartShortcut = it) })
             Row {
                 Select(
                     label = "Timer End Trigger",
@@ -51,6 +44,15 @@ fun SettingsForm(preferencesState: MutableState<AppPreferences>) {
                     ),
                 )
             }
+
+            KeyCombinationPicker(
+                label = "Stop Keybind",
+                state = preferences.timerEndShortcut,
+                setState = { preferences = preferences.copy(timerEndShortcut = it) })
+            KeyCombinationPicker(
+                label = "Reset Keybind",
+                state = preferences.timerResetShortcut,
+                setState = { preferences = preferences.copy(timerResetShortcut = it) })
             Row {
                 Select(
                     label = "Theme",

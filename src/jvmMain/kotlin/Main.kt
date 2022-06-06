@@ -35,20 +35,16 @@ fun App(
     var width by widthState
     var height by heightState
     AppPreferencesLoader(exit, preferencesState)
+    LaunchedEffect(Unit) { GlobalScreen.registerNativeHook() }
     LaunchedEffect(showSettingsForm) {
         resizable = !showSettingsForm;
         if (showSettingsForm) {
-            width = 500
-            height = 500
+            width = 600
+            height = 600
         } else {
             width = preferences.widthInt
             height = preferences.heightInt
         }
-    }
-    DisposableEffect(Unit) {
-        val keyBinder = KeyBinder();
-        GlobalScreen.addNativeKeyListener(keyBinder);
-        onDispose { GlobalScreen.removeNativeKeyListener(keyBinder) }
     }
     CustomTheme(darkmode = darkmode) {
         Box(
@@ -62,6 +58,8 @@ fun App(
             Surface {
                 if (showSettingsForm) {
                     SettingsForm(preferencesState)
+                } else {
+                    TheTimer(preferencesState, 30, height)
                 }
                 if (hovered || showSettingsForm) {
                     ButtonOverlay(

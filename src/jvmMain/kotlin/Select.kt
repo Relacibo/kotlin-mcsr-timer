@@ -34,7 +34,7 @@ fun <T> Select(
             OutlinedTextField(
                 value = stateToValue(state)!!,
                 onValueChange = { },
-                modifier = Modifier.fillMaxWidth().selectable(false, false){}.onGloballyPositioned { coordinates ->
+                modifier = Modifier.fillMaxWidth().onGloballyPositioned { coordinates ->
                     textfieldSize = coordinates.size
                 },
                 label = { Text(label) },
@@ -55,5 +55,4 @@ fun <T> Select(
             }
         }
     }
-
 }

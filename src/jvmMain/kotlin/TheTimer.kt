@@ -1,30 +1,31 @@
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.*
 import com.github.kwhat.jnativehook.GlobalScreen
-import com.github.kwhat.jnativehook.NativeHookException
 import kotlinx.coroutines.delay
 import java.time.Duration
 import java.time.Instant
 
 
 @Composable
-fun TheTimer(preferencesState: State<AppPreferences>, updatesPerSecond: Int, height: Int) {
-    var lastTimestamp by remember { mutableStateOf<Instant?>(null) }
-    var add by remember { mutableStateOf<Duration>(Duration.ZERO) }
+fun TheTimer(
+    preferencesState: State<AppPreferences>,
+    updatesPerSecond: Int,
+    width: State<Float>,
+    visible: Boolean
+) {
+    var lastTimestamp by rememberSaveable { mutableStateOf<Instant?>(null) }
+    var add by rememberSaveable { mutableStateOf<Duration>(Duration.ZERO) }
     var formatted by remember { mutableStateOf<String>("00:00.00") }
-    var textSize by remember { mutableStateOf<TextUnit>(12.sp) }
+    val preferences by preferencesState;
     val density = LocalDensity.current;
-    LaunchedEffect(height) {
-        println()
-        with(density) {
-            textSize = height.toSp()
-        }
-    }
+    val textSize by remember(width) { derivedStateOf { with(density) { (width.value / 7).toSp() } } }
     DisposableEffect(Unit) {
         val keyBinder = KeyBinder {
             if (lastTimestamp != null) {
@@ -62,14 +63,24 @@ fun TheTimer(preferencesState: State<AppPreferences>, updatesPerSecond: Int, hei
         }
     }
     LaunchedEffect(add) {
-        if (add == Duration.ZERO)
-            formatted = "00:00.00"
+        formatted = if (add == Duration.ZERO)
+            "00:00.00"
         else
-            formatted = format(add)
+            format(add)
     }
-    Text(
-        text = formatted,
-        modifier = Modifier.fillMaxSize().padding(Dp.Hairline),
-        fontSize = textSize
-    )
+    if (visible) {
+        Box(modifier = Modifier.fillMaxSize().padding(Dp.Hairline)) {
+            Column(verticalArrangement = Arrangement.spacedBy(17.dp)) {
+                Text(
+                    text = formatted,
+                    modifier = Modifier.fillMaxSize().padding(horizontal = 10.dp, vertical = 0.dp),
+                    fontSize = textSize,
+                    textAlign = TextAlign.Start,
+                    lineHeight = textSize / 1000,
+                    maxLines = 1,
+                    color = Color.Gray
+                )
+            }
+        }
+    }
 }

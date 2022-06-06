@@ -29,8 +29,7 @@ data class AppPreferences constructor(
     var timerEndTrigger: TimerEndTrigger = TimerEndTrigger.END_SCREEN,
     var timerEndShortcut: KeyCombination? = null,
     var timerResetShortcut: KeyCombination? = null,
-    var widthInt: Int = 500,
-    var heightInt: Int = 300,
+    var windowSize: WindowSize = WindowSize.MD
 )
 
 @Serializable
@@ -51,6 +50,35 @@ enum class ColorTheme {
     SYSTEM,
     DARK,
     LIGHT,
+}
+
+@Serializable
+enum class WindowSize {
+    XS,
+    SM,
+    MD,
+    LG,
+    XL
+}
+
+fun incrementWindowSize(ws: WindowSize): WindowSize {
+    return when (ws) {
+        WindowSize.XS -> WindowSize.SM
+        WindowSize.SM -> WindowSize.MD
+        WindowSize.MD -> WindowSize.LG
+        WindowSize.LG -> WindowSize.XL
+        else -> ws
+    }
+}
+
+fun decrementWindowSize(ws: WindowSize): WindowSize {
+    return when (ws) {
+        WindowSize.SM -> WindowSize.XS
+        WindowSize.MD -> WindowSize.SM
+        WindowSize.LG -> WindowSize.MD
+        WindowSize.XL -> WindowSize.LG
+        else -> ws
+    }
 }
 
 fun darkthemeToBinary(theme: ColorTheme, systemDarkTheme: Boolean): Boolean {

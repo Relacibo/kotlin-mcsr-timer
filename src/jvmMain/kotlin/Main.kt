@@ -9,19 +9,18 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import com.github.kwhat.jnativehook.GlobalScreen
+import java.awt.Dimension
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 @Preview
 fun App(
     exit: () -> Unit,
-    resizableState: MutableState<Boolean>,
-    widthState: MutableState<Int>,
-    heightState: MutableState<Int>
+    sizeState: MutableState<Size>
 ) {
     val preferencesState = remember { mutableStateOf<AppPreferences>(AppPreferences()) }
     var preferences by preferencesState
@@ -31,43 +30,49 @@ fun App(
     val hovered by interactionSource.collectIsHoveredAsState()
     val systemDarkTheme = isSystemInDarkTheme()
     val darkmode = darkthemeToBinary(preferences.colorTheme, systemDarkTheme)
-    var resizable by resizableState
-    var width by widthState
-    var height by heightState
+    var size by sizeState
+    val windowSize by remember(preferences) {
+        derivedStateOf { preferences.windowSize }
+    }
+    val widthState = remember(sizeState) {
+        derivedStateOf { sizeState.value.width }
+    }
     AppPreferencesLoader(exit, preferencesState)
     LaunchedEffect(Unit) { GlobalScreen.registerNativeHook() }
-    LaunchedEffect(showSettingsForm) {
-        resizable = !showSettingsForm;
+    LaunchedEffect(showSettingsForm, windowSize) {
         if (showSettingsForm) {
-            width = 600
-            height = 600
+            size = Size(600F, 600F)
         } else {
-            width = preferences.widthInt
-            height = preferences.heightInt
+            size = when (windowSize) {
+                WindowSize.XS -> Size(400F, 200F)
+                WindowSize.SM -> Size(600F, 300F)
+                WindowSize.MD -> Size(800F, 400F)
+                WindowSize.LG -> Size(1000F, 500F)
+                WindowSize.XL -> Size(1200F, 600F)
+            }
         }
     }
     CustomTheme(darkmode = darkmode) {
         Box(
             Modifier.fillMaxSize().hoverable(interactionSource).background(MaterialTheme.colors.background)
-                .onSizeChanged {
-                    if (!showSettingsForm) {
-                        preferences = preferences.copy(widthInt = it.width, heightInt = it.height)
-                    }
-                }
         ) {
             Surface {
                 if (showSettingsForm) {
                     SettingsForm(preferencesState)
+                }
+                TheTimer(preferencesState, 30, widthState, !showSettingsForm)
+                val boState = if (showSettingsForm) {
+                    ButtonOverlayState.SETTINGS
                 } else {
-                    TheTimer(preferencesState, 30, height)
+                    ButtonOverlayState.TIMER
                 }
                 if (hovered || showSettingsForm) {
                     ButtonOverlay(
-                        exit, showSettingsFormState, if (showSettingsForm) {
-                            ButtonOverlayState.SETTINGS
-                        } else {
-                            ButtonOverlayState.TIMER
-                        }
+                        exit,
+                        showSettingsFormState,
+                        state = boState,
+                        windowSize = preferences.windowSize,
+                        setWindowSize = { preferences = preferences.copy(windowSize = it) }
                     )
                 }
             }
@@ -82,23 +87,19 @@ fun CustomTheme(darkmode: Boolean, content: @Composable () -> Unit) {
 
 
 fun main() = application {
-    val resizableState = remember { mutableStateOf(false) }
-    val resizable by resizableState;
-    val widthState = remember { mutableStateOf(0) }
-    val width by widthState
-    val heightState = remember { mutableStateOf(0) }
-    val height by heightState
+    val sizeState = remember { mutableStateOf<Size>(Size(0F, 0F)) }
+    val size by sizeState
     Window(
         onCloseRequest = ::exitApplication,
         undecorated = true,
         alwaysOnTop = true,
-        resizable = resizable
+        resizable = false
     ) {
-        LaunchedEffect(width, height) {
-            window.setSize(width, height)
+        LaunchedEffect(size) {
+            window.size = Dimension(size.width.toInt(), size.height.toInt())
         }
         WindowDraggableArea {
-            App(::exitApplication, resizableState, widthState, heightState)
+            App(::exitApplication, sizeState)
         }
     }
 }

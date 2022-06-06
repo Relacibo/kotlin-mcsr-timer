@@ -31,13 +31,13 @@ fun ButtonOverlay(
     val systemDarkTheme = isSystemInDarkTheme()
     Box(Modifier.fillMaxSize().padding(PaddingValues(horizontal = 9.dp, vertical = 6.dp))) {
         Row(Modifier.align(Alignment.TopEnd)) {
-            IconButton(onClick = { setWindowSize(decrementWindowSize(windowSize)) }) {
-                Text("\u2212", textAlign = TextAlign.Center, fontSize = 30.sp)
-            }
-            IconButton(onClick = { setWindowSize(incrementWindowSize(windowSize)) }) {
-                Text("\u002B", textAlign = TextAlign.Center, fontSize = 30.sp)
-            }
             if (state == ButtonOverlayState.TIMER) {
+                IconButton(onClick = { setWindowSize(decrementWindowSize(windowSize)) }) {
+                    Text("\u2212", textAlign = TextAlign.Center, fontSize = 30.sp)
+                }
+                IconButton(onClick = { setWindowSize(incrementWindowSize(windowSize)) }) {
+                    Text("\u002B", textAlign = TextAlign.Center, fontSize = 30.sp)
+                }
                 IconButton(onClick = { showSettingsForm = true }) {
                     Icon(
                         Icons.Outlined.Settings,

@@ -77,7 +77,6 @@ fun TheTimer(
                     modifier = Modifier.fillMaxSize().padding(horizontal = 10.dp, vertical = 0.dp),
                     fontSize = textSize,
                     textAlign = TextAlign.Start,
-                    lineHeight = textSize / 1000,
                     maxLines = 1,
                     color = Color.Gray
                 )
